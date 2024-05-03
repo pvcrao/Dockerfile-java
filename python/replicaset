@@ -1,0 +1,103 @@
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: jenkins
+spec:
+  minReadySeconds: 3
+  replicas: 4
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - jenkins
+      - key: app2
+        operator: In
+        values:
+          - alpine    
+  template:
+    metadata:
+      name: jenkins-alpine
+      labels: 
+        app: jenkins
+        app2: alpine
+    spec:
+      initContainers:
+        - name: alpine
+          image: alpine
+          command: [ "ping", "-c", "4", "google.com"]
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts-jdk11
+          ports:
+            - containerPort: 8080
+              protocol: TCP      
+                
+
+        
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nop-commerce
+  labels: 
+    app: nop-commerce
+spec:
+  minReadySeconds: 3
+  replicas: 4
+  selector: 
+    matchExpressions:
+      - key: app
+        operator: In 
+        values: 
+          - nopcommerce
+      - key: version
+        operator: In
+        values: 
+          - "1.0"
+    matchLabels:
+      app: nopcommerce
+      version: "1.0"
+  template:
+    metadata:
+      name: nopcommerce
+      labels:
+        app: nopcommerce
+        version: "1.0"
+    spec:
+      containers:
+        - name: nop-commerce
+          image: maheshryali/nopcommerce:1.0
+          ports:
+            - containerPort: 80
+              protocol: TCP        
+
+
+
+---
+apiVersion: v1
+kind: ReplicaSet
+metadata: 
+  name: spring-petclinic
+  labels:
+    name: spring
+    version: "1.0"
+spec:
+  minReadySeconds: 3
+  replicas: 4
+  selector:
+    matchLabels:
+      app: spring
+      version: "1.0"
+  metadata:
+    name: spring-petclinic
+    labels: 
+      name: spring-petclinic
+      version: "1.0"
+      spec:
+        containers:
+          - name: spring-petclinic
+            image: spring:1.0
