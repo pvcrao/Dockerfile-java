@@ -1,0 +1,28 @@
+piVersion: v1
+kind: ConfigMap
+metadata:
+  name: tomcat-file
+data:
+  name: tomcat
+  version: tomcat8
+  purpose: debug
+
+---
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: gameoflife
+spec:
+  containers:
+    - name: gameoflife
+      image: maheshryali/gameoflife:1.0
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /opt/
+          name: config-file
+  volumes:     
+    - name: config-file
+      configMap:
+        name: tomcat-file
