@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mysql
+  labels: 
+    app: mysql
+    version: 8.0-debian
+spec:
+  minReadySeconds: 4
+  replicas: 3
+  selector: 
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - mysql
+      - key: version
+        operator: In 
+        values:
+          - "8.0-debian"  
+  template:
+    metadata:
+      name: mysql
+      labels:
+        app: mysql
+        version: "8.0-debian"
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0-debian 
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: rootroot
+            - name: MYSQL_USER
+              value: mahesh
+            - name: MYSQL_PASSWORD
+              value: mahesh
+            - name: MYSQL_DATABASE
+              value: project                
+          resources:
+            requests:
+              memory: "64Mi"  
+              cpu: "250m"  
+            limits: 
+              memory: "128Mi"
+              cpu: "500m"
